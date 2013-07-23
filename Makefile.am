@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS         = -I support/m4
 
 SUBDIRS = bin src tests 
 
-EXTRA_DIST = README.md
+EXTRA_DIST = README.md support
 
 # I am using the following guidelines for the clean targets.
 # http://ftp.gnu.org/old-gnu/Manuals/automake-1.7.2/html_chapter/automake_14.html
