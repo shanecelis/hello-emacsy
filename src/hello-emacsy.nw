@@ -270,7 +270,11 @@ Not particularly interesting bits of code but necessary to compile.
 
 <<Headers>>=
 #ifndef SCM_MAGIC_SNARFER
+#ifdef __APPLE__
 #include <GLUT/glut.h> 
+#else
+#include <GL/glut.h> 
+#endif
 #include <stdlib.h>
 #include <emacsy.h>
 #endif
