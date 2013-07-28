@@ -1,7 +1,10 @@
+include $(top_srcdir)/support/automake/noweb.am
+include $(top_srcdir)/support/automake/guile.am
+
 .SECONDARY:
 
-BUILT_SOURCES =
-CLEANFILES=hello-emacsy.c.x 
+BUILT_SOURCES = $(NOWEB_BUILT_FILES)
+CLEANFILES=hello-emacsy.c.x $(NOWEB_CLEANFILES)
 
 WARN_NOTANGLE = $(top_builddir)/bin/warn-notangle
 dist-hook:
@@ -10,14 +13,12 @@ dist-hook:
 NOWEB_DOCS = hello-emacsy-paper.pdf
 NOWEB_FILES = hello-emacsy.nw hello-emacsy-paper.nw
 NOWEB_PRODUCTS = hello-emacsy.c .hello-emacsy.scm
-EXTRA_DIST = $(NOWEB_DOCS)
+EXTRA_DIST = $(NOWEB_DOCS) $(NOWEB_EXTRA_DIST)
 
 doc-local : 	hello-emacsy-paper.pdf
 
-
 hello-emacsy-paper.pdf : hello-emacsy.tex
-# hello-emacsy.c.x
-hello-emacsy.c.x : hello-emacsy.c
+
 hello-emacsy.o : hello-emacsy.c.x
 
 .hello-emacsy.scm : hello-emacsy.nw
@@ -31,9 +32,6 @@ hello_emacsy_LDFLAGS = $(GUILE_LDFLAGS) $(GLUT_LDFLAGS) $(GL_LDFLAGS) $(GLU_LDFL
 hello_emacsy_SOURCES = hello-emacsy.c
 
 MAINTAINERCLEANFILES = Makefile.in config.h.in 
-
-include $(top_srcdir)/support/automake/noweb.am
-include $(top_srcdir)/support/automake/guile.am
 
 run-local: hello-emacsy
 	$(ENV) ./hello-emacsy

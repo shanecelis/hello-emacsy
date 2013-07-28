@@ -11,6 +11,8 @@ AM_EXTRA_RECURSIVE_TARGETS([run show-doc])
 AC_CONFIG_MACRO_DIR([support/m4])
 # Checks for programs.
 AC_PROG_CC_C_O
+# CXX required for OpenGL, GL, and GLUT libraries.
+AC_PROG_CXX 
 AC_PROG_LIBTOOL
 AX_CHECK_NOWEB
 AC_PATH_PROG([PERL], [perl])
