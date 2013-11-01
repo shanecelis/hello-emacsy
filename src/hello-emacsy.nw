@@ -103,7 +103,7 @@ void keyboard_func(unsigned char glut_key,
 @ The keys \verb|C-a| and \verb|C-b| returns $1$ and $2$
 respectively. We want to map these to their actual character values.
 <<Handle control modifier.>>=
-key = mod_flags & EY_MODKEY_CONTROL 
+key = mod_flags & EMACSY_MODKEY_CONTROL 
   ? glut_key + ('a' - 1) 
   : glut_key;
 @ 
@@ -119,7 +119,7 @@ void display_func() {
   <<Display the counter variable.>>
 
   /* Process events in Emacsy. */
-  if (emacsy_tick() & EY_QUIT_APPLICATION) {
+  if (emacsy_tick() & EMACSY_QUIT_APPLICATION_P) {
     emacsy_terminate();
     exit(0);
   }
@@ -187,11 +187,11 @@ bind them to keys by changing our config file \verb|.hello-emacsy.scm|.
 <<file:.hello-emacsy.scm>>=
 (use-modules (emacsy emacsy))
 
-(define-interactive (incr-counter)
- (set-counter! (1+ (get-counter))))
+(define-interactive (incr-counter #:optional (n (universal-argument-pop!)))
+ (set-counter! (+ (get-counter) n)))
 
-(define-interactive (decr-counter)
- (set-counter! (1- (get-counter))))
+(define-interactive (decr-counter #:optional (n (universal-argument-pop!)))
+ (set-counter! (- (get-counter) n)))
 
 (define-key global-map 
  (kbd "=") 'incr-counter)
@@ -218,6 +218,8 @@ Let's implement another command that will ask the user for a number to
 set the counter to.
 
 <<file:.hello-emacsy.scm>>=
+(set! debug-on-error? #t)
+
 (define-interactive (change-counter) 
  (set-counter! 
    (string->number 
@@ -238,7 +240,7 @@ we can do better.  Let's start a REPL we can connect to.
 (use-modules (system repl server))
 
 ;; Start a server on port 37146.
-(spawn-server)
+;(spawn-server)
 @ 
 
 Now we can \verb|telnet localhost 37146| to get a REPL.  
@@ -330,10 +332,10 @@ draw_string(250, 250, counter_string);
 int glut_mod_flags = glutGetModifiers();
 mod_flags = 0;
 if (glut_mod_flags & GLUT_ACTIVE_SHIFT)
-   mod_flags |= EY_MODKEY_SHIFT;
+   mod_flags |= EMACSY_MODKEY_SHIFT;
 if (glut_mod_flags & GLUT_ACTIVE_CTRL)
-   mod_flags |= EY_MODKEY_CONTROL;
+   mod_flags |= EMACSY_MODKEY_CONTROL;
 if (glut_mod_flags & GLUT_ACTIVE_ALT)
-   mod_flags |= EY_MODKEY_META;
+   mod_flags |= EMACSY_MODKEY_META;
 @ 
 \end{subappendices}
