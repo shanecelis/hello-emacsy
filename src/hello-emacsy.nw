@@ -1,3 +1,4 @@
+% -*- mode: Noweb; noweb-code-mode: c-mode -*-
 \section{Introduction}
 I have received a lot of questions asking, what does
 Emacsy\footnote{Kickstarter page \url{http://kck.st/IY0Bau}} actually do?  What
@@ -9,10 +10,10 @@ illustrates Emacsy API usage.
 \section{Embedders' API}
 
 Here are a few function prototypes defined in \verb|emacsy.h|.
-
+@
 <<emacsy.h>>=
 /* Initialize Emacsy. */
-int  emacsy_initialize(void);
+int  emacsy_initialize(int init_flags);
 
 /* Enqueue a keyboard event. */
 void emacsy_key_event(int char_code,
@@ -60,6 +61,7 @@ Our application's state is captured by one global variable.
 
 <<State>>=
 int counter = 0; /* We display this number. */
+int interactive = 1;
 @ 
 
 Let's initialize everything in [[main]] and enter our runloop.
@@ -70,7 +72,11 @@ int main(int argc, char *argv[]) {
   <<Initialize GLUT.>>
   scm_init_guile();    /* Initialize Guile. */
   /* Initialize Emacsy. */
-  err = emacsy_initialize(); 
+  if (argc == 2 && strcmp("--batch", argv[1]) == 0)
+    interactive = 0;
+  err = emacsy_initialize(interactive 
+                          ? EMACSY_INTERACTIVE 
+                          : EMACSY_NON_INTERACTIVE); 
   if (err)
     exit(err);
   primitives_init();   /* Register primitives. */
@@ -130,6 +136,8 @@ void display_func() {
   draw_string(0, 30, emacsy_mode_line());
         
   glutSwapBuffers();
+//  if (! interactive)
+//    glutPostRedisplay();
 }
 @ 
 At this point, our application can process key events, accept input on
@@ -187,16 +195,18 @@ bind them to keys by changing our config file \verb|.hello-emacsy.scm|.
 <<file:.hello-emacsy.scm>>=
 (use-modules (emacsy emacsy))
 
-(define-interactive (incr-counter #:optional (n (universal-argument-pop!)))
+(define-interactive (incr-counter #:optional 
+                    (n (universal-argument-pop!)))
  (set-counter! (+ (get-counter) n)))
 
-(define-interactive (decr-counter #:optional (n (universal-argument-pop!)))
+(define-interactive (decr-counter #:optional 
+                    (n (universal-argument-pop!)))
  (set-counter! (- (get-counter) n)))
 
+(define-key global-map
+  "=" 'incr-counter)
 (define-key global-map 
- (kbd "=") 'incr-counter)
-(define-key global-map 
- (kbd "-") 'decr-counter)
+  "-" 'decr-counter)
 @
 
 We load this file in [[main]] like so.
@@ -317,7 +327,8 @@ glutInitDisplayMode(GLUT_RGB|GLUT_DOUBLE);
 glutInitWindowSize(500, 500);
 glutCreateWindow("Hello, Emacsy!");
 glutDisplayFunc(display_func);
-glutKeyboardFunc(keyboard_func);
+if (interactive)
+   glutKeyboardFunc(keyboard_func);
 @
 
 Our application has just one job.
@@ -339,3 +350,5 @@ if (glut_mod_flags & GLUT_ACTIVE_ALT)
    mod_flags |= EMACSY_MODKEY_META;
 @ 
 \end{subappendices}
+
+
