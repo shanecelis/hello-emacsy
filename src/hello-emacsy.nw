@@ -129,7 +129,7 @@ void display_func() {
     emacsy_terminate();
     exit(0);
   }
-
+  glutSetWindowTitle(emacsy_current_buffer());
   /* Display Emacsy message/echo area. */
   draw_string(0, 5, emacsy_message_or_echo_area());
   /* Display Emacsy mode line. */
@@ -197,10 +197,12 @@ bind them to keys by changing our config file \verb|.hello-emacsy.scm|.
 
 (define-interactive (incr-counter #:optional 
                     (n (universal-argument-pop!)))
+ "Increment the counter."
  (set-counter! (+ (get-counter) n)))
 
 (define-interactive (decr-counter #:optional 
                     (n (universal-argument-pop!)))
+ "Decrement the counter."
  (set-counter! (- (get-counter) n)))
 
 (define-key global-map
@@ -231,6 +233,7 @@ set the counter to.
 (set! debug-on-error? #t)
 
 (define-interactive (change-counter) 
+ "Change the counter to a new value."
  (set-counter! 
    (string->number 
      (read-from-minibuffer 
